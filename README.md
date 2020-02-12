@@ -1,6 +1,6 @@
 # Solution: Pixel-Engine Fun
 
-This solution contains various projects working with the [ninjapretzel Pixel-Engine](https://github.com/DevChrome/Pixel-Engine/tree/master/Libraries), which is itself a C# port of [OneLoneCoder's Pixel Game Engine](https://github.com/OneLoneCoder/olcPixelGameEngine).
+This solution contains various projects working with the [ninjapretzel Pixel-Engine](https://github.com/DevChrome/Pixel-Engine), which is itself a C# port of [OneLoneCoder's Pixel Game Engine](https://github.com/OneLoneCoder/olcPixelGameEngine).
 
 This repository is just me learning the engine and working to convert examples over to C# as I learn. It's not meant as a anything more than that.
 

@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MenuManager.cs" />
     <Compile Include="MenuObject.cs" />
     <Compile Include="PopUpMenuGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

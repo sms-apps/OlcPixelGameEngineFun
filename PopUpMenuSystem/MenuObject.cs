@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using PixelEngine;
 using PixelEngine.Utilities;
 
-namespace PopUpMenu
+namespace PopUpMenuSystem
 {
     public class MenuObject
     {
-        protected const int Patch = 8;
+        public static int Patch = 8;
 
         #region Properties
+
+        protected Vector2Int CellCursor { get; set; } = new Vector2Int(0, 0);
 
         /// <summary>
         /// The size of the padding between this MenuObject's cells.
@@ -25,6 +27,10 @@ namespace PopUpMenu
         /// This MenuObject's "table".
         /// </summary>
         protected Vector2Int CellTable { get; set; }
+
+        protected int CursorItem { get; set; } = 0;
+
+        public Vector2Int CursorPos { get; set; } = new Vector2Int(0, 0);
 
         /// <summary>
         /// Is this MenuObject enabled?
@@ -197,6 +203,19 @@ namespace PopUpMenu
             TotalRows = Items.Count / CellTable.x + (Items.Count % CellTable.x > 0 ? 1 : 0);
         }
 
+        public void ClampCursor()
+        {
+            // Find item in children.
+            CursorItem = CellCursor.y * CellTable.x + CellCursor.x;
+
+            // Clamp cursor.
+            if (CursorItem >= Items.Count)
+            {
+                CellCursor = new Vector2Int((Items.Count % CellTable.x) - 1, Items.Count / CellTable.x);
+                CursorItem = Items.Count - 1;
+            }
+        }
+
         public void DrawSelf(Game game, Sprite sprite, Vector2Int screenOffset)
         {
             var screenLocation = new Vector2Int(0, 0);
@@ -290,8 +309,54 @@ namespace PopUpMenu
 
             #endregion === Draw Panel Contents ===
 
+            // Calculate cursor position in screen space in case system draws it.
+            CursorPos = new Vector2Int(
+                //var cursorPosX = (CellCursor.x * (CellSize.x + CellPadding.x)) * Patch + screenOffset.x - Patch;
+                CellCursor.x * (CellSize.x + CellPadding.x) * Patch + screenOffset.x - Patch,
+                //var cursorPosY = ((CellCursor.y - TopVisibleRow) * (CellSize.y + CellPadding.y)) * Patch + screenOffset.y + Patch;
+                (CellCursor.y - TopVisibleRow) * (CellSize.y + CellPadding.y) * Patch + screenOffset.y + Patch
+            );
+
             // Set the PixelMode back to the "current" pixel mode.
             game.PixelMode = currentPixelMode;
+        }
+
+        public void OnDown()
+        {
+            CellCursor = new Vector2Int(CellCursor.x, CellCursor.y == TotalRows ? TotalRows - 1 : CellCursor.y + 1);
+
+            if (CellCursor.y > (TopVisibleRow + CellTable.y - 1))
+            {
+                TopVisibleRow++;
+                if (TopVisibleRow > (TotalRows - CellTable.y)) TopVisibleRow = TotalRows - CellTable.y;
+            }
+
+            ClampCursor();
+        }
+
+        public void OnLeft()
+        {
+            CellCursor = new Vector2Int(CellCursor.x - 1 < 0 ? 0 : CellCursor.x - 1, CellCursor.y);
+            ClampCursor();
+        }
+
+        public void OnRight()
+        {
+            CellCursor = new Vector2Int(CellCursor.x + 1 == CellTable.x ? CellTable.x - 1 : CellCursor.x + 1, CellCursor.y);
+            ClampCursor();
+        }
+
+        public void OnUp()
+        {
+            CellCursor = new Vector2Int(CellCursor.x, CellCursor.y - 1 < 0 ? 0 : CellCursor.y - 1);
+
+            if (CellCursor.y < TopVisibleRow)
+            {
+                TopVisibleRow--;
+                if (TopVisibleRow < 0) TopVisibleRow = 0;
+            }
+
+            ClampCursor();
         }
 
         #endregion Actions

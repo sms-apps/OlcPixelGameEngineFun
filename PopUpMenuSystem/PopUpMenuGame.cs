@@ -1,15 +1,15 @@
 ﻿using PixelEngine;
 using PixelEngine.Utilities;
 
-namespace PopUpMenu
+namespace PopUpMenuSystem
 {
     public class PopUpMenuGame : Game
     {
         private const int Patch = 8;
         private static Sprite Gfx { get; set; }
         private static MenuObject MainMenu { get; set; }
+        private static MenuManager MenuManager { get; set; }
         private static string Name { get; set; }
-        private static bool HasDrawnOnce { get; set; }
 
         public PopUpMenuGame()
         {
@@ -24,8 +24,8 @@ namespace PopUpMenu
         private static void Main(string[] args)
         {
             PopUpMenuGame game = new PopUpMenuGame("Not Default!");
-            HasDrawnOnce = false;
             MainMenu = new MenuObject("main");
+            MenuManager = new MenuManager();
             game.Construct(400, 200, 4, 4);
             game.Start();
         }
@@ -62,8 +62,15 @@ namespace PopUpMenu
         public override void OnUpdate(float delta)
         {
             Clear(Pixel.Presets.Black);
-            MainMenu.DrawSelf(this, Gfx, new Vector2Int(10, 10));
-            HasDrawnOnce = true;
+
+            if (GetKey(Key.M).Pressed) MenuManager.Open(MainMenu);
+            if (GetKey(Key.Up).Pressed) MenuManager.OnUp();
+            if (GetKey(Key.Down).Pressed) MenuManager.OnDown();
+            if (GetKey(Key.Left).Pressed) MenuManager.OnLeft();
+            if (GetKey(Key.Right).Pressed) MenuManager.OnRight();
+
+            MenuManager.Draw(this, Gfx, new Vector2Int(30, 30));
+            //MainMenu.DrawSelf(this, Gfx, new Vector2Int(10, 10));
 
             base.OnUpdate(delta);
         }
