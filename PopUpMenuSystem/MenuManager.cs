@@ -17,9 +17,28 @@ namespace PopUpMenuSystem
 
         public void Close() => Panels.Clear();
 
-        //public MenuObject OnConfirm()
-        //{
-        //}
+        public MenuObject OnConfirm()
+        {
+            if (!IsOpen) return null;
+            var next = Panels.Last().OnConfirm();
+
+            if (next == Panels.Last())
+            {
+                if (Panels.Last().GetSelectedItem().Enabled)
+                {
+                    return Panels.Last().GetSelectedItem();
+                }
+            }
+            else
+            {
+                if (next.Enabled)
+                {
+                    Panels.Push(next);
+                }
+            }
+
+            return null;
+        }
 
         public void Draw(Game game, Sprite sprite, Vector2Int screenOffset)
         {

@@ -35,12 +35,12 @@ namespace PopUpMenuSystem
         /// <summary>
         /// Is this MenuObject enabled?
         /// </summary>
-        protected bool Enabled { get; set; } = true;
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// This MenuObject's Id.
         /// </summary>
-        protected int Id { get; set; } = -1;
+        public int Id { get; set; } = -1;
 
         /// <summary>
         /// Dictionary to track the Items by index.
@@ -55,7 +55,7 @@ namespace PopUpMenuSystem
         /// <summary>
         /// This MenuObject's name.
         /// </summary>
-        protected string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Size of a single Patch.
@@ -113,6 +113,12 @@ namespace PopUpMenuSystem
         #endregion Construction
 
         #region Getters
+
+        /// <summary>
+        /// Gets the currently selected item.
+        /// </summary>
+        /// <returns>MenuObject that is currently at the index of CursorItem.</returns>
+        public MenuObject GetSelectedItem() => Items[CursorItem];
 
         /// <summary>
         /// Get this MenuObject's size, in Vector2Int format.
@@ -319,6 +325,12 @@ namespace PopUpMenuSystem
 
             // Set the PixelMode back to the "current" pixel mode.
             game.PixelMode = currentPixelMode;
+        }
+
+        public MenuObject OnConfirm()
+        {
+            if (Items[CursorItem].HasChildren()) return Items[CursorItem];
+            else return this;
         }
 
         public void OnDown()
