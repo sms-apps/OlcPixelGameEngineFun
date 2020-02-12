@@ -36,12 +36,22 @@ namespace PopUpMenu
 
             DrawText(new Point(1, 1), "Testing", Pixel.Presets.Apricot);
 
-            MainMenu.SetTable(1, 5);
+            MainMenu.SetTable(3, 3);
             MainMenu["Attack"].SetId(101);
             MainMenu["Magic"].SetId(102);
             MainMenu["Defend"].SetId(103);
             MainMenu["Items"].SetId(104);
             MainMenu["Escape"].SetId(105);
+
+            MainMenu["Dummy1"].SetId(201);
+            MainMenu["Dummy2"].SetId(202);
+            MainMenu["Dummy3"].SetId(203);
+            MainMenu["Dummy4"].SetId(204);
+            MainMenu["Dummy5"].SetId(205);
+            MainMenu["Dummy6"].SetId(206);
+            MainMenu["Dummy7"].SetId(207);
+            MainMenu["Dummy8"].SetId(208);
+            MainMenu["Dummy9"].SetId(209);
 
             MainMenu.Build();
             MainMenu.DrawSelf(this, Gfx, new Vector2Int(10, 10));

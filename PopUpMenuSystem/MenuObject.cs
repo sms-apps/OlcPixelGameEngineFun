@@ -184,10 +184,7 @@ namespace PopUpMenu
                 if (item.HasChildren()) item.Build();
 
                 // Longest child name determines cell width.
-                CellSize = new Vector2Int(
-                    Math.Max(item.GetSize().x, CellSize.x),
-                    Math.Max(item.GetSize().y, CellSize.y)
-                );
+                CellSize = new Vector2Int(Math.Max(item.GetSize().x, CellSize.x), Math.Max(item.GetSize().y, CellSize.y));
             }
 
             // Adjust the size of this object, in patches, if it were rendered as a panel.
@@ -202,21 +199,25 @@ namespace PopUpMenu
 
         public void DrawSelf(Game game, Sprite sprite, Vector2Int screenOffset)
         {
+            var screenLocation = new Vector2Int(0, 0);
+            var sourcePatch = new Vector2Int(0, 0);
+            var cell = new Vector2Int(0, 0);
+            var patchPosition = new Vector2Int(0, 0);
+
             // Record current pixel mode user is using.
             Pixel.Mode currentPixelMode = game.PixelMode;
             game.PixelMode = Pixel.Mode.Mask;
 
             // Draw the Panel and Border.
-            var patchPosition = new Vector2Int(0, 0);
             for (patchPosition.x = 0; patchPosition.x < SizeInPatches.x; patchPosition.x++)
             {
                 for (patchPosition.y = 0; patchPosition.y < SizeInPatches.y; patchPosition.y++)
                 {
                     // Determine position in screen space.
-                    var screenLocation = patchPosition * Patch + screenOffset;
+                    screenLocation = patchPosition * Patch + screenOffset;
 
                     // Calculate which patch is needed.
-                    var sourcePatch = new Vector2Int(0, 0);
+                    sourcePatch = new Vector2Int(0, 0);
                     if (patchPosition.x > 0) sourcePatch.x = 1;
                     if (patchPosition.x == SizeInPatches.x - 1) sourcePatch.x = 2;
                     if (patchPosition.y > 0) sourcePatch.y = 1;
@@ -227,9 +228,7 @@ namespace PopUpMenu
                 }
             }
 
-            // === Draw Panel Contents
-            var cell = new Vector2Int(0, 0);
-            patchPosition = new Vector2Int(1, 1);
+            #region === Draw Panel Contents ===
 
             // Work out visible items
             var topLeftItem = TopVisibleRow * CellTable.x;
@@ -239,23 +238,35 @@ namespace PopUpMenu
             bottomRightItem = Math.Min(Items.Count, bottomRightItem);
             var visibleItems = bottomRightItem - topLeftItem;
 
+            // Draw the top scroll marker, if required.
+            if (TopVisibleRow > 0)
+            {
+                patchPosition = new Vector2Int(SizeInPatches.x - 2, 0);
+                screenLocation = patchPosition * Patch + screenOffset;
+                sourcePatch = new Vector2Int(3, 0);
+                game.DrawPartialSprite(screenLocation, sprite, sourcePatch * Patch, PatchSize.x, PatchSize.y);
+            }
+
+            // Draw the bottom scroll marker, if required.
+            if ((TotalRows - TopVisibleRow) > CellTable.y)
+            {
+                patchPosition = new Vector2Int(SizeInPatches.x - 2, SizeInPatches.y - 1);
+                screenLocation = patchPosition * Patch + screenOffset;
+                sourcePatch = new Vector2Int(3, 2);
+                game.DrawPartialSprite(screenLocation, sprite, sourcePatch * Patch, PatchSize.x, PatchSize.y);
+            }
+
             // Draw visible items.
             for (var i = 0; i < visibleItems; i++)
             {
                 // Cell location.
-                cell = new Vector2Int(
-                    i % CellTable.x,
-                    i / CellTable.x
-                );
+                cell = new Vector2Int(i % CellTable.x, i / CellTable.x);
 
                 // Patch location, including border offset and padding.
-                patchPosition = new Vector2Int(
-                    cell.x * (CellSize.x + CellPadding.x) + 1,
-                    cell.y * (CellSize.y + CellPadding.y) + 1
-                );
+                patchPosition = new Vector2Int(cell.x * (CellSize.x + CellPadding.x) + 1, cell.y * (CellSize.y + CellPadding.y) + 1);
 
                 // Actual screen location in pixels.
-                var screenLocation = patchPosition * Patch + screenOffset;
+                screenLocation = patchPosition * Patch + screenOffset;
 
                 // Display item header.
                 game.DrawText(
@@ -263,7 +274,23 @@ namespace PopUpMenu
                     Items[topLeftItem + i].Name,
                     Items[topLeftItem + i].Enabled ? Pixel.Presets.White : Pixel.Presets.DarkGrey
                 );
+
+                // Display indicator that panel has a sub-panel.
+                if (Items[topLeftItem + i].HasChildren())
+                {
+                    patchPosition = new Vector2Int(
+                        cell.x * (CellSize.x + CellPadding.x) + 1 + CellSize.x,
+                        cell.y * (CellSize.y + CellPadding.y) + 1
+                    );
+                    sourcePatch = new Vector2Int(3, 1);
+                    screenLocation = patchPosition * Patch + screenOffset;
+                    game.DrawPartialSprite(screenLocation, sprite, sourcePatch * Patch, PatchSize.x, PatchSize.y);
+                }
             }
+
+            #endregion === Draw Panel Contents ===
+
+            // Set the PixelMode back to the "current" pixel mode.
             game.PixelMode = currentPixelMode;
         }
 
