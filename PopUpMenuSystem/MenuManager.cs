@@ -7,6 +7,8 @@ namespace PopUpMenuSystem
 {
     public class MenuManager
     {
+        public bool IsOpen => Panels.Any();
+
         private Stack<MenuObject> Panels { get; set; } = new Stack<MenuObject>();
 
         public MenuManager()
