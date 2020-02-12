@@ -28,6 +28,9 @@ namespace PopUpMenuSystem
         /// </summary>
         protected Vector2Int CellTable { get; set; }
 
+        /// <summary>
+        /// The index of the item the cursor is on.
+        /// </summary>
         protected int CursorItem { get; set; } = 0;
 
         public Vector2Int CursorPos { get; set; } = new Vector2Int(0, 0);
@@ -317,9 +320,7 @@ namespace PopUpMenuSystem
 
             // Calculate cursor position in screen space in case system draws it.
             CursorPos = new Vector2Int(
-                //var cursorPosX = (CellCursor.x * (CellSize.x + CellPadding.x)) * Patch + screenOffset.x - Patch;
                 CellCursor.x * (CellSize.x + CellPadding.x) * Patch + screenOffset.x - Patch,
-                //var cursorPosY = ((CellCursor.y - TopVisibleRow) * (CellSize.y + CellPadding.y)) * Patch + screenOffset.y + Patch;
                 (CellCursor.y - TopVisibleRow) * (CellSize.y + CellPadding.y) * Patch + screenOffset.y + Patch
             );
 
@@ -329,13 +330,16 @@ namespace PopUpMenuSystem
 
         public MenuObject OnConfirm()
         {
-            if (Items[CursorItem].HasChildren()) return Items[CursorItem];
-            else return this;
+            var underConsideration = Items[CursorItem];
+            if (underConsideration.HasChildren()) return underConsideration;
+            return this;
         }
 
         public void OnDown()
         {
-            CellCursor = new Vector2Int(CellCursor.x, CellCursor.y == TotalRows ? TotalRows - 1 : CellCursor.y + 1);
+            CellCursor = new Vector2Int(
+                CellCursor.x,
+                CellCursor.y == TotalRows ? TotalRows - 1 : CellCursor.y + 1);
 
             if (CellCursor.y > (TopVisibleRow + CellTable.y - 1))
             {

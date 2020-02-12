@@ -9,7 +9,7 @@ namespace PopUpMenuSystem
     {
         public bool IsOpen => Panels.Any();
 
-        private Stack<MenuObject> Panels { get; set; } = new Stack<MenuObject>();
+        private Queue<MenuObject> Panels { get; set; } = new Queue<MenuObject>();
 
         public MenuManager()
         {
@@ -33,7 +33,7 @@ namespace PopUpMenuSystem
             {
                 if (next.Enabled)
                 {
-                    Panels.Push(next);
+                    Panels.Enqueue(next);
                 }
             }
 
@@ -80,13 +80,13 @@ namespace PopUpMenuSystem
 
         public void OnBack()
         {
-            if (Panels.Any()) Panels.Pop();
+            if (Panels.Any()) Panels.Dequeue();
         }
 
         public void Open(MenuObject menuObject)
         {
             Close();
-            Panels.Push(menuObject);
+            Panels.Enqueue(menuObject);
         }
     }
 }
